@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>testPhotoUp</title>
+	<meta charset="utf-8">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<style type="text/css">
+		.content{
+			width: 668px;
+			height: 608px;
+			position:absolute;
+			top:50%;
+			left: 50%;
+			/*background-color: gray;*/
+			transform: translate(-50%,-50%);
+			border: 1px solid #ccc;
+			border-radius: 5px;
+
+		}
+		.header{
+			width: 100%;
+			height: 50px;
+			border: 1px solid #ccc;
+			padding-left: 20px;
+			padding-right: 20px;
+			box-sizing: border-box;
+		}
+		.header .upText{
+			float: left;
+			color: red;
+			font-size: 20px;
+			height: 50px;
+			line-height: 50px;
+			border-bottom: 4px solid red;
+			box-sizing: border-box;
+		}
+		.header .dele{
+			float: right;
+			width: 50px;
+			height: 50px;
+			/*background-color: red;*/
+			position: relative;
+			margin-top: 5px;
+		}
+		.dele:before {
+			content: "";
+			display: block;
+			width: 40px;
+			height: 3px;
+			margin-top: 20px;
+			background-color: black;
+			transform: rotate(45deg);
+			position: absolute;
+		}
+		.dele:after {
+			content: "";
+			position: absolute;
+			display: block;
+			width: 40px;
+			height: 3px;
+			margin-top: 20px;
+			background-color: black;
+			transform: rotate(-45deg);
+		}
+		.main{
+			width: 100%;
+			height: 558px;
+			/*background-color: gray;*/
+			box-sizing: border-box;
+			padding: 20px;
+		}
+		.imgs{
+			width: 110px;
+			height: 110px;
+			border: 1px solid #ccc;
+		}
+		.footer{
+			width: 100%;
+			height: 100px;
+			/*background-color: yellow;*/
+			position: absolute;
+			z-index: 10;
+			bottom: 0;
+			text-align: center;
+			box-sizing: border-box;
+			padding-top: 30px;
+		}
+		.footer .up{
+			margin-right: 30px;
+			background-color: red;
+
+		}
+		.footer input{
+			width: 100px;
+			height: 50px;
+			border-radius: 10px;
+		}
+		.footer .cancer{
+			/*back*/
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		<div class="header">
+			<span class="upText">上传图片</span>
+			<span class="dele"></span>
+		</div>
+		<div class="main">
+			<img  class ="imgs" src="https://p1.pstatp.com/large/3ecd0004b6bdeff4c48d">
+			<input type="file" name="photo" style="display:none;" id="getPhoto">
+		</div>
+		<div class="footer">
+			<input type="button" name="" value="上传" class="up">
+			<input type="button" name="" value="取消" class="cancer">
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+
+	// var fileEle = document.querySelector('#getPhoto');
+	// var imgEle = document.querySelector(".imgs");
+	// imgEle.addEventListener("click",_ => {
+	// 	fileEle.click();
+	// })
+	let res = {};
+	res.data = [];
+	$('.imgs').on("click", _=>{
+		$('#getPhoto').click();
+	})
+
+	$('#getPhoto').on("change",(event) => {
+		console.log(event);
+		var file = event.target.files[0];
+		var reader = new FileReader(); // 创建FileReader对象
+		reader.readAsDataURL(file); // 读取file对象，读取完毕后会返回result 图片base64格式的结果
+		console.log(reader);
+
+		reader.onload = function(e){
+			res.data.push(e.target.result)
+			var imgs = `<img src=${e.target.result} class="imgs">`
+			$(".main").prepend(imgs);
+
+		}
+
+		$(".cancer").on("click",(ev)=>{
+			var text = `<img  class ="imgs" src="https://p1.pstatp.com/large/3ecd0004b6bdeff4c48d">
+				<input type="file" name="photo" style="display:none;" id="getPhoto">`;
+			$(".main").html(text);
+			console.log("hellos");
+		})
+
+		$(".up").on('click', function() {
+			$.ajax({
+				url: "https://mp.toutiao.com/profile_v2/",
+				type: "post",
+				dataType: "string",
+				data: JSON.stringify(res.data),
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				success: function(data) {
+					alert("上传成功！");
+					var text = `<img  class ="imgs" src="https://p1.pstatp.com/large/3ecd0004b6bdeff4c48d">
+						<input type="file" name="photo" style="display:none;" id="getPhoto">`;
+					$(".main").html(text);
+				},
+				error: function() {
+					alert("上传失败，请重试！");
+				}
+			});
+		})
+	})
+</script>
+</html>
